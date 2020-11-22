@@ -7,12 +7,12 @@ import (
 )
 
 type RedisCli struct {
-	Docker
+	*Docker
 	id string
 }
 
 func NewRedisCli(cli *client.Client, containerName string) (*RedisCli, error) {
-	docker := Docker{cli: cli}
+	docker := &Docker{cli: cli}
 	containerId, ok := docker.FindContainerId(containerName)
 	if !ok {
 		return nil, fmt.Errorf("unable to find container name: %s", containerName)
