@@ -16,7 +16,9 @@ func main() {
 		panic(err)
 	}
 
-	redisCli, err := NewRedisCli(cli, redisContainer)
+	docker := &Docker{cli: cli}
+
+	redisCli, err := NewRedisCli(docker, redisContainer)
 	if err != nil {
 		panic(err)
 	}
