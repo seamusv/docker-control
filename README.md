@@ -1,0 +1,1 @@
+Just a sample Go app to connect to Docker and exec commands as a redis client
