@@ -2,22 +2,24 @@ package main
 
 import (
 	"fmt"
+	"github.com/docker/docker/client"
 	"strings"
 )
 
 type RedisCli struct {
-	docker *Docker
-	id     string
+	Docker
+	id string
 }
 
-func NewRedisCli(docker *Docker, containerName string) (*RedisCli, error) {
+func NewRedisCli(cli *client.Client, containerName string) (*RedisCli, error) {
+	docker := Docker{cli: cli}
 	containerId, ok := docker.FindContainerId(containerName)
 	if !ok {
 		return nil, fmt.Errorf("unable to find container name: %s", containerName)
 	}
 
 	r := &RedisCli{
-		docker: docker,
+		Docker: docker,
 		id:     containerId,
 	}
 	return r, nil
@@ -40,7 +42,7 @@ func (r *RedisCli) Keys(pattern string) ([]string, error) {
 }
 
 func (r *RedisCli) exec(commands ...string) (*ExecResult, error) {
-	res, err := r.docker.Exec(r.id, append([]string{"redis-cli", "--raw"}, commands...)...)
+	res, err := r.Exec(r.id, append([]string{"redis-cli", "--raw"}, commands...)...)
 	if err == nil {
 		res.StdOut = strings.TrimSuffix(res.StdOut, "\n")
 	}
