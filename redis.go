@@ -24,7 +24,7 @@ func NewRedisCli(docker *Docker, containerName string) (*RedisCli, error) {
 }
 
 func (r *RedisCli) Get(key string) (string, error) {
-	res, err := r.docker.Exec(r.id, "redis-cli", "--raw", "get", key)
+	res, err := r.exec("get", key)
 	if err != nil {
 		return "", err
 	}
@@ -32,9 +32,13 @@ func (r *RedisCli) Get(key string) (string, error) {
 }
 
 func (r *RedisCli) Keys(pattern string) ([]string, error) {
-	res, err := r.docker.Exec(r.id, "redis-cli", "--raw", "keys", pattern)
+	res, err := r.exec("keys", pattern)
 	if err != nil {
 		return nil, err
 	}
 	return strings.Split(strings.TrimSuffix(res.StdOut, "\n"), "\n"), nil
+}
+
+func (r *RedisCli) exec(commands ...string) (*ExecResult, error) {
+	return r.docker.Exec(r.id, append([]string{"redis-cli", "--raw"}, commands...)...)
 }
